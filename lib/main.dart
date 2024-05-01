@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Chit Chat',
+      title: 'ISI Chat',
       theme: TAppTheme.mobileTheme,
       home: SigninPage(),
     );

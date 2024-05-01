@@ -75,7 +75,7 @@ class AddSpecialityPage extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               backgroundImage: AssetImage(
-                                  "assets/isi_image.png"), // Image circulaire
+                                  "assets/categorys.png"), // Image circulaire
                               radius: 30, // Ajustez la taille du cercle
                             ),
                             SizedBox(
