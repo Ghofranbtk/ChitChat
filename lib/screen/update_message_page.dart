@@ -6,6 +6,9 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../models/message_model.dart';
 import '../../theme/constants.dart';
+import 'package:http/http.dart' as http;
+
+const String backendUrl = 'http://192.168.100.162:9250/api/updatedNotification';
 
 class UpdateMessagePage extends StatefulWidget {
   final MessageModel message;
@@ -27,6 +30,21 @@ class _UpdateMessagePageState extends State<UpdateMessagePage> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   File? _image;
   final picker = ImagePicker();
+
+  Future<void> triggerNotification() async {
+    try {
+      final response = await http.get(Uri.parse(backendUrl));
+
+      if (response.statusCode == 200) {
+        print("Notification envoyée aux étudiants.");
+      } else {
+        print(
+            "Erreur lors de l'envoi de la notification: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Erreur: $error");
+    }
+  }
 
   @override
   void initState() {
@@ -149,16 +167,17 @@ class _UpdateMessagePageState extends State<UpdateMessagePage> {
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: kBlueColor,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (formkey.currentState!.validate()) {
                     final updatedMessage = MessageModel(
                       idMsg: widget.message.idMsg,
                       title: _titreController.text.trim(),
+                      nomProf: widget.message.nomProf,
                       description: _descriptionController.text.trim(),
                       urlImg:
                           _image != null ? _image!.path : widget.message.urlImg,
                     );
-
+                    await triggerNotification();
                     MessageController.instance.editMessageController(
                       widget.specialite,
                       updatedMessage,

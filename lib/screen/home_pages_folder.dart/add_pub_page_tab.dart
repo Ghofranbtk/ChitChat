@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:http/http.dart' as http;
 import '../../controllers/message_controller.dart';
 import '../../models/message_model.dart';
 import '../../models/user_model.dart';
 import '../../theme/constants.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+
+const String backendUrl =
+    'http://192.168.100.162:9250/api/sendNotification'; // Modifiez avec votre URL réelle
 
 class AddPubPageTab extends StatefulWidget {
   const AddPubPageTab({super.key, required this.usr});
@@ -23,7 +25,31 @@ class _AddPubPageTabState extends State<AddPubPageTab> {
   TextEditingController _titreController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  bool _isChecked = false;
+
+  Future<void> triggerNotification() async {
+    if (widget.usr.role != "Admin") {
+      print("Seuls les étudiants peuvent envoyer des notifications.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Only students can send notifications.")),
+      );
+      return;
+    }
+
+    try {
+      final response = await http.get(Uri.parse(backendUrl));
+
+      if (response.statusCode == 200) {
+        print("Notification envoyée aux étudiants.");
+      } else {
+        print(
+            "Erreur lors de l'envoi de la notification: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Erreur: $error");
+    }
+  }
+
+  //bool _isChecked = false;
   File? _image;
   final picker = ImagePicker();
   Future getImageGallery() async {
@@ -178,23 +204,14 @@ class _AddPubPageTabState extends State<AddPubPageTab> {
                           description: _descriptionController.text.trim(),
                           nomProf: widget.usr.fullName,
                         );
+                        await triggerNotification();
                         await controller.createMsgController(
                             msg, selectedSpecialite!, _image!.path);
 
-                        await AwesomeNotifications().createNotification(
-                          content: NotificationContent(
-                            id: 10,
-                            channelKey: 'basic_channel',
-                            title: 'Message envoyé',
-                            body: 'Votre message a été envoyé avec succès.',
-                            notificationLayout: NotificationLayout.BigPicture,
-                            bigPicture: _image != null
-                                ? 'file://${_image!.path}'
-                                : null,
-                          ),
-                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("The message is sended")));
+
+                        Navigator.pop(context);
                       }
                     },
                     child: Text(
