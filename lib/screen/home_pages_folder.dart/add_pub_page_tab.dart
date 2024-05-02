@@ -9,6 +9,7 @@ import '../../controllers/message_controller.dart';
 import '../../models/message_model.dart';
 import '../../models/user_model.dart';
 import '../../theme/constants.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class AddPubPageTab extends StatefulWidget {
   const AddPubPageTab({super.key, required this.usr});
@@ -179,6 +180,19 @@ class _AddPubPageTabState extends State<AddPubPageTab> {
                         );
                         await controller.createMsgController(
                             msg, selectedSpecialite!, _image!.path);
+
+                        await AwesomeNotifications().createNotification(
+                          content: NotificationContent(
+                            id: 10,
+                            channelKey: 'basic_channel',
+                            title: 'Message envoyé',
+                            body: 'Votre message a été envoyé avec succès.',
+                            notificationLayout: NotificationLayout.BigPicture,
+                            bigPicture: _image != null
+                                ? 'file://${_image!.path}'
+                                : null,
+                          ),
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("The message is sended")));
                       }

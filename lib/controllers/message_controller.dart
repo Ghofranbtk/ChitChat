@@ -24,4 +24,12 @@ class MessageController extends GetxController {
       String userId, String speciality, String role) {
     _messageRepo.deleteSpeciality(userId, speciality, role);
   }
+
+  void editMessageController(String specialite, MessageModel updatedMsg) {
+    try {
+      _messageRepo.editMessage(specialite, updatedMsg);
+    } catch (error) {
+      print("Erreur lors de la mise à jour du message : $error");
+    }
+  }
 }

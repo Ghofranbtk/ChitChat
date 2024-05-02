@@ -3,13 +3,17 @@ import 'package:get/get.dart';
 import '../controllers/message_controller.dart';
 import 'components/message_component.dart';
 import '../models/user_model.dart'; // Pour accéder à UserModel
+import 'package:chitchat/screen/update_message_page.dart';
 
 class AllMessagePage extends StatefulWidget {
   final String specialite;
-  final UserModel usr; // Ajoutez une référence à UserModel
+  final UserModel usr; // Référence à UserModel
 
-  const AllMessagePage(
-      {super.key, required this.specialite, required this.usr});
+  const AllMessagePage({
+    super.key,
+    required this.specialite,
+    required this.usr,
+  });
 
   @override
   State<AllMessagePage> createState() => _AllMessagePageState();
@@ -32,7 +36,7 @@ class _AllMessagePageState extends State<AllMessagePage> {
           backgroundColor: Colors.transparent,
         ),
         body: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               Text(
@@ -41,17 +45,17 @@ class _AllMessagePageState extends State<AllMessagePage> {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Expanded(
                 child: StreamBuilder<List<dynamic>>(
                   stream: controller.getMessageController(widget.specialite),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text('No data available');
+                      return const Text('No data available');
                     } else {
                       return ListView.builder(
                         itemCount: snapshot.data!.length,
@@ -59,41 +63,51 @@ class _AllMessagePageState extends State<AllMessagePage> {
                           final message = snapshot.data![index];
 
                           return GestureDetector(
-                            onLongPress: widget.usr.role == "Admin"
-                                ? () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text("Confirm Deletion"),
-                                          content: Text(
-                                              "Do you really want to delete this message?"),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              child: Text("Cancel"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                controller
-                                                    .deleteMessageController(
-                                                  widget.specialite,
-                                                  message.idMsg,
-                                                );
-                                                Navigator.pop(
-                                                    context); // Ferme le dialogue
-                                                setState(
-                                                    () {}); // Rafraîchit l'interface utilisateur
-                                              },
-                                              child: Text("Delete"),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                            onLongPress: () {
+                              if (widget.usr.role == "Admin") {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text("Choose an action"),
+                                      content: const Text(
+                                        "What do you want to do with this message?",
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            controller.deleteMessageController(
+                                              widget.specialite,
+                                              message.idMsg,
+                                            );
+                                            Navigator.pop(
+                                                context); // Ferme le dialogue
+                                            setState(
+                                                () {}); // Rafraîchit l'interface utilisateur
+                                          },
+                                          child: const Text("Delete"),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UpdateMessagePage(
+                                                  specialite: widget.specialite,
+                                                  message: message,
+                                                ),
+                                              ),
+                                            ); // Navigue vers la page de mise à jour
+                                          },
+                                          child: const Text("Update"),
+                                        ),
+                                      ],
                                     );
-                                  }
-                                : null, // Désactiver l'événement onLongPress si l'utilisateur n'est pas admin
+                                  },
+                                );
+                              }
+                            },
                             child: ListTile(
                               title: MessageComponent(msg: message),
                             ),
