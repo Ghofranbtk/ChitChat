@@ -8,8 +8,9 @@ import '../../models/message_model.dart';
 import '../../theme/constants.dart';
 import 'package:http/http.dart' as http;
 
-const String backendUrl = 'http://192.168.100.162:9250/api/updatedNotification';
+const String backendUrl = 'http://10.10.2.95:9250/api/updatedNotification';
 
+//nodemon
 class UpdateMessagePage extends StatefulWidget {
   final MessageModel message;
   final String specialite; // Ajouter la spécialité

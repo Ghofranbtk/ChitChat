@@ -10,8 +10,8 @@ import '../../models/message_model.dart';
 import '../../models/user_model.dart';
 import '../../theme/constants.dart';
 
-const String backendUrl =
-    'http://192.168.100.162:9250/api/sendNotification'; // Modifiez avec votre URL réelle
+// mettre sous cette forme : @ip:port/
+const String backendUrl = 'http://10.10.2.95:9250/api/updatedNotification';
 
 class AddPubPageTab extends StatefulWidget {
   const AddPubPageTab({super.key, required this.usr});

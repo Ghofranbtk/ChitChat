@@ -49,6 +49,7 @@ dependencies:
   firebase_app_check: ^0.2.2+4
   onesignal_flutter: ^5.1.6
 
+# flutter pub run flutter_launcher_icons
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true

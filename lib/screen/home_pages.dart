@@ -12,7 +12,6 @@ class HomePages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isAdmin = true;
     return SafeArea(
       child: DefaultTabController(
         length: 3,
